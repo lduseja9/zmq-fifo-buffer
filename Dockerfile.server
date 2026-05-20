@@ -1,0 +1,24 @@
+FROM golang:1.24-alpine AS builder
+
+WORKDIR /app
+COPY common/go.mod common/go.sum ./common/
+COPY server/go.mod server/go.sum ./server/
+
+WORKDIR /app/server
+RUN go mod download
+
+WORKDIR /app
+COPY common/ ./common/
+COPY server/ ./server/
+
+WORKDIR /app/server
+RUN go build -o /out/server .
+
+FROM alpine:3.19
+
+RUN apk add --no-cache netcat-openbsd
+WORKDIR /app
+COPY --from=builder /out/server .
+
+EXPOSE 5555
+CMD ["./server"]

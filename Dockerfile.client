@@ -1,0 +1,22 @@
+FROM golang:1.24-alpine AS builder
+
+WORKDIR /app
+COPY common/go.mod common/go.sum ./common/
+COPY client/go.mod client/go.sum ./client/
+
+WORKDIR /app/client
+RUN go mod download
+
+WORKDIR /app
+COPY common/ ./common/
+COPY client/ ./client/
+
+WORKDIR /app/client
+RUN go build -o /out/client .
+
+FROM alpine:3.19
+
+WORKDIR /app
+COPY --from=builder /out/client .
+
+CMD ["./client"]

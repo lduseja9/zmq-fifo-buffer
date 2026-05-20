@@ -14,9 +14,14 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const endpoint = "tcp://127.0.0.1:5555"
+const defaultEndpoint = "tcp://0.0.0.0:5555"
 
 func main() {
+	endpoint := os.Getenv("ZMQ_ENDPOINT")
+	if endpoint == "" {
+		endpoint = defaultEndpoint
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
