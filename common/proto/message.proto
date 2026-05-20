@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package fifo;
+
+option go_package = "github.com/user/fifo-common/proto";
+
+//
+// To generate the go code from this protobuf definition, run the following commands from a level above the directory containing this file
+// (1) go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+// (2) protoc --proto_path=. --go_out=. --go_opt=module=github.com/user/fifo-common proto/message.proto
+//
+
+enum Operation {
+    PUSH_QUEUE = 0;
+    PULL_QUEUE = 1;
+    SIZE_QUEUE = 2;
+}
+
+message Request {
+    Operation operation = 1;
+    string data = 2;
+}
+
+message Response {
+    Status status = 1;
+    string data = 2;
+    int64 size = 3;
+}
+
+enum Status {
+    Success = 0;
+    Empty = 1;
+    Failed = 2;
+}
