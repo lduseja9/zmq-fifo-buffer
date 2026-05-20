@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	pb "github.com/lduseja9/zmq-fifo-buffer/common/proto"
 
@@ -10,9 +11,14 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const endpoint = "tcp://127.0.0.1:5555"
+const defaultEndpoint = "tcp://127.0.0.1:5555"
 
 func main() {
+	endpoint := os.Getenv("ZMQ_ENDPOINT")
+	if endpoint == "" {
+		endpoint = defaultEndpoint
+	}
+
 	ctx := context.Background()
 	// set up a ZeroMQ REP socket to listen for incoming messages
 	socket := zmq.NewReq(ctx)
