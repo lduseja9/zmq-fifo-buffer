@@ -46,7 +46,7 @@ The server binds a ZeroMQ **REP** socket and processes one request at a time in 
    * The deffault value of `ZMQ_ENDPOINT` is  `tcp://0.0.0.0:5555`
 
 
-### Build the server
+#### Build the server
 
 
 ```bash
@@ -59,6 +59,7 @@ go build -o server .
 
 ### `client` — demo client
 
+#### A simple client
 A short-lived program that connects to the server and demonstrates all three operations:
 
 1. Pushes 5 items (`item-0` … `item-4`)
@@ -67,16 +68,46 @@ A short-lived program that connects to the server and demonstrates all three ope
 4. Checks the size again
 5. Drains the remaining items until the server returns `Empty`
 
-### Build the client
+#### Build the simple client
 
 ```bash
 cd client
 go build -o client .
 ```
 
+#### A Concurrent client
+A short-lived program that runs 2 clients on different goroutines. One pushes values on the fifo buffer (aka producer 
+thread) and the other pulls the values from the fifo buffer (aka consumer thread). Both the threads have appropriate 
+amount of sleep time to show interleaving of values.
+
+#### Build the concurrent client
+
+```bash
+cd client/concurrent-client
+go build -o concurrent-client.exe .
+```
+
 ---
 
-## Running tests
+## Running the clients 
+
+#### Run the simple client
+This should show simple push, pull, and size operations on the fifo buffer
+
+```bash
+cd client
+./client
+```
+
+#### Run the concurrent client
+This should demonstrate the fifo nature of the buffere despite the interleaving of pushes and pulls on the server by two clients
+
+```bash
+cd client/concurrent-client
+./concurrent-client.exe
+```
+
+## Running the unit tests
 
 All tests live in the `server` module. Run them from the `server` directory.
 
