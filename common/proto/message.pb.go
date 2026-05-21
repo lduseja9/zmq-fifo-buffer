@@ -254,7 +254,7 @@ const file_proto_message_proto_rawDesc = "" +
 	"\aSuccess\x10\x00\x12\t\n" +
 	"\x05Empty\x10\x01\x12\n" +
 	"\n" +
-	"\x06Failed\x10\x02B#Z!github.com/user/fifo-common/protob\x06proto3"
+	"\x06Failed\x10\x02B2Z0github.com/lduseja9/zmq-fifo-buffer/common/protob\x06proto3"
 
 var (
 	file_proto_message_proto_rawDescOnce sync.Once

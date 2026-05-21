@@ -2,12 +2,12 @@ syntax = "proto3";
 
 package fifo;
 
-option go_package = "github.com/user/fifo-common/proto";
+option go_package = "github.com/lduseja9/zmq-fifo-buffer/common/proto";
 
 //
 // To generate the go code from this protobuf definition, run the following commands from a level above the directory containing this file
 // (1) go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-// (2) protoc --proto_path=. --go_out=. --go_opt=module=github.com/user/fifo-common proto/message.proto
+// (2) protoc --proto_path=. --go_out=. --go_opt=module=github.com/lduseja9/zmq-fifo-buffer/common proto/message.proto
 //
 
 enum Operation {
