@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	pb "github.com/lduseja9/zmq-fifo-buffer/common/proto"
+	"github.com/lduseja9/zmq-fifo-buffer/server/interfaces"
 	"github.com/lduseja9/zmq-fifo-buffer/server/storage"
 
 	zmq "github.com/go-zeromq/zmq4"
@@ -78,42 +79,38 @@ func main() {
 	}
 }
 
-func requestHandler(fifoBuffer *storage.FifoBuffer, request *pb.Request) *pb.Response {
+func requestHandler(buf interfaces.PushPullBuffer, request *pb.Request) *pb.Response {
 	fmt.Printf("Handling request: Operation=%s, Data=%q\n", request.Operation.String(), request.Data)
 
 	switch request.Operation {
 	case pb.Operation_PUSH_QUEUE:
-		// Here you would add the item to your queue
 		fmt.Printf("Pushing item to queue: %q\n", request.Data)
-		fifoBuffer.Push(request.Data)
+		buf.Push(request.Data)
 		return &pb.Response{Status: pb.Status_Success}
 	case pb.Operation_PULL_QUEUE:
-		// Here you would pull an item from your queue
-		result := fifoBuffer.Pull()
+		result := buf.Pull()
 		if result.Ok {
 			return &pb.Response{Status: pb.Status_Success, Data: result.Item}
 		} else {
 			return &pb.Response{Status: pb.Status_Empty}
 		}
 	case pb.Operation_SIZE_QUEUE:
-		// Here you would return the size of your queue
-		size := fifoBuffer.Size()
+		size := buf.Size()
 		return &pb.Response{Status: pb.Status_Success, Size: int64(size)}
 	default:
 		fmt.Printf("Unknown operation: %s\n", request.Operation.String())
 		return &pb.Response{Status: pb.Status_Failed}
 	}
-
 }
 
-func sendResponse(socket zmq.Socket, response *pb.Response) {
+func sendResponse(buffSocket interfaces.BuffSocket, response *pb.Response) {
 	wireResponse, err := proto.Marshal(response)
 	if err != nil {
 		fmt.Printf("Error marshaling response: %v\n", err)
 		return
 	}
 
-	if err := socket.Send(zmq.NewMsg(wireResponse)); err != nil {
+	if err := buffSocket.Send(zmq.NewMsg(wireResponse)); err != nil {
 		fmt.Printf("Error sending response: %v\n", err)
 		return
 	}

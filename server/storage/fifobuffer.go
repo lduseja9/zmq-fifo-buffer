@@ -1,15 +1,14 @@
 package storage
 
-import "fmt"
+import (
+	"fmt"
 
-type PullResult struct {
-	Item string
-	Ok   bool
-}
+	"github.com/lduseja9/zmq-fifo-buffer/server/interfaces"
+)
 
 type FifoBuffer struct {
 	pushChannel chan string
-	pullChannel chan chan PullResult
+	pullChannel chan chan interfaces.PullResult
 	sizeChannel chan chan int
 	stopChannel chan struct{}
 	buffer      []string
@@ -18,7 +17,7 @@ type FifoBuffer struct {
 func NewFifoBuffer() *FifoBuffer {
 	return &FifoBuffer{
 		pushChannel: make(chan string),
-		pullChannel: make(chan chan PullResult),
+		pullChannel: make(chan chan interfaces.PullResult),
 		sizeChannel: make(chan chan int),
 		stopChannel: make(chan struct{}),
 		buffer:      make([]string, 0),
@@ -32,10 +31,10 @@ func (fb *FifoBuffer) Start() {
 			fb.buffer = append(fb.buffer, item)
 		case pullCh := <-fb.pullChannel:
 			if len(fb.buffer) > 0 {
-				pullCh <- PullResult{Item: fb.buffer[0], Ok: true}
+				pullCh <- interfaces.PullResult{Item: fb.buffer[0], Ok: true}
 				fb.buffer = fb.buffer[1:]
 			} else {
-				pullCh <- PullResult{Item: "", Ok: false}
+				pullCh <- interfaces.PullResult{Item: "", Ok: false}
 			}
 		case sizeCh := <-fb.sizeChannel:
 			sizeCh <- len(fb.buffer)
@@ -49,8 +48,8 @@ func (fb *FifoBuffer) Push(item string) {
 	fb.pushChannel <- item
 }
 
-func (fb *FifoBuffer) Pull() PullResult {
-	pullCh := make(chan PullResult)
+func (fb *FifoBuffer) Pull() interfaces.PullResult {
+	pullCh := make(chan interfaces.PullResult)
 	fb.pullChannel <- pullCh
 	return <-pullCh
 }
